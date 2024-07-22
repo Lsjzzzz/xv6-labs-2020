@@ -1,0 +1,167 @@
+[1mdiff --git a/user/ulib.c b/user/ulib.c[m
+[1mindex 4775939..923772e 100644[m
+[1m--- a/user/ulib.c[m
+[1m+++ b/user/ulib.c[m
+[36m@@ -1,123 +1,104 @@[m
+[31m-#include "kernel/types.h"[m
+[31m-#include "kernel/stat.h"[m
+ #include "kernel/fcntl.h"[m
+[32m+[m[32m#include "kernel/stat.h"[m
+[32m+[m[32m#include "kernel/types.h"[m
+ #include "user/user.h"[m
+ [m
+[31m-char*[m
+[31m-strcpy(char *s, const char *t)[m
+[31m-{[m
+[32m+[m[32mchar *strcpy(char *s, const char *t) {[m
+   char *os;[m
+ [m
+   os = s;[m
+[31m-  while((*s++ = *t++) != 0)[m
+[32m+[m[32m  while ((*s++ = *t++) != 0)[m
+     ;[m
+   return os;[m
+ }[m
+ [m
+[31m-int[m
+[31m-strcmp(const char *p, const char *q)[m
+[31m-{[m
+[31m-  while(*p && *p == *q)[m
+[32m+[m[32mint strcmp(const char *p, const char *q) {[m
+[32m+[m[32m  while (*p && *p == *q)[m
+     p++, q++;[m
+   return (uchar)*p - (uchar)*q;[m
+ }[m
+ [m
+[31m-uint[m
+[31m-strlen(const char *s)[m
+[31m-{[m
+[32m+[m[32muint strlen(const char *s) {[m
+   int n;[m
+ [m
+[31m-  for(n = 0; s[n]; n++)[m
+[32m+[m[32m  for (n = 0; s[n]; n++)[m
+     ;[m
+   return n;[m
+ }[m
+ [m
+[31m-void*[m
+[31m-memset(void *dst, int c, uint n)[m
+[31m-{[m
+[31m-  char *cdst = (char *) dst;[m
+[32m+[m[32mvoid *memset(void *dst, int c, uint n) {[m
+[32m+[m[32m  char *cdst = (char *)dst;[m
+   int i;[m
+[31m-  for(i = 0; i < n; i++){[m
+[32m+[m[32m  for (i = 0; i < n; i++) {[m
+     cdst[i] = c;[m
+   }[m
+   return dst;[m
+ }[m
+ [m
+[31m-char*[m
+[31m-strchr(const char *s, char c)[m
+[31m-{[m
+[31m-  for(; *s; s++)[m
+[31m-    if(*s == c)[m
+[31m-      return (char*)s;[m
+[32m+[m[32mchar *strchr(const char *s, char c) {[m
+[32m+[m[32m  for (; *s; s++)[m
+[32m+[m[32m    if (*s == c)[m
+[32m+[m[32m      return (char *)s;[m
+   return 0;[m
+ }[m
+ [m
+[31m-char*[m
+[31m-gets(char *buf, int max)[m
+[31m-{[m
+[32m+[m[32mchar *gets(char *buf, int max) {[m
+   int i, cc;[m
+   char c;[m
+ [m
+[31m-  for(i=0; i+1 < max; ){[m
+[32m+[m[32m  for (i = 0; i + 1 < max;) {[m
+     cc = read(0, &c, 1);[m
+[31m-    if(cc < 1)[m
+[32m+[m[32m    if (cc < 1)[m
+       break;[m
+     buf[i++] = c;[m
+[31m-    if(c == '\n' || c == '\r')[m
+[32m+[m[32m    if (c == '\n' || c == '\r')[m
+       break;[m
+   }[m
+   buf[i] = '\0';[m
+   return buf;[m
+ }[m
+ [m
+[31m-int[m
+[31m-stat(const char *n, struct stat *st)[m
+[31m-{[m
+[32m+[m[32mint stat(const char *n, struct stat *st) {[m
+   int fd;[m
+   int r;[m
+ [m
+   fd = open(n, O_RDONLY);[m
+[31m-  if(fd < 0)[m
+[32m+[m[32m  if (fd < 0)[m
+     return -1;[m
+   r = fstat(fd, st);[m
+   close(fd);[m
+   return r;[m
+ }[m
+ [m
+[31m-int[m
+[31m-atoi(const char *s)[m
+[31m-{[m
+[32m+[m[32mint atoi(const char *s) {[m
+   int n;[m
+ [m
+   n = 0;[m
+[31m-  while('0' <= *s && *s <= '9')[m
+[31m-    n = n*10 + *s++ - '0';[m
+[32m+[m
+[32m+[m[32m  while ('0' <= *s && *s <= '9')[m
+[32m+[m[32m    n = n * 10 + *s++ - '0';[m
+   return n;[m
+ }[m
+ [m
+[31m-void*[m
+[31m-memmove(void *vdst, const void *vsrc, int n)[m
+[31m-{[m
+[32m+[m[32mvoid *memmove(void *vdst, const void *vsrc, int n) {[m
+   char *dst;[m
+   const char *src;[m
+ [m
+   dst = vdst;[m
+   src = vsrc;[m
+   if (src > dst) {[m
+[31m-    while(n-- > 0)[m
+[32m+[m[32m    while (n-- > 0)[m
+       *dst++ = *src++;[m
+   } else {[m
+     dst += n;[m
+     src += n;[m
+[31m-    while(n-- > 0)[m
+[32m+[m[32m    while (n-- > 0)[m
+       *--dst = *--src;[m
+   }[m
+   return vdst;[m
+ }[m
+ [m
+[31m-int[m
+[31m-memcmp(const void *s1, const void *s2, uint n)[m
+[31m-{[m
+[32m+[m[32mint memcmp(const void *s1, const void *s2, uint n) {[m
+   const char *p1 = s1, *p2 = s2;[m
+   while (n-- > 0) {[m
+     if (*p1 != *p2) {[m
+[36m@@ -129,8 +110,6 @@[m [mmemcmp(const void *s1, const void *s2, uint n)[m
+   return 0;[m
+ }[m
+ [m
+[31m-void *[m
+[31m-memcpy(void *dst, const void *src, uint n)[m
+[31m-{[m
+[32m+[m[32mvoid *memcpy(void *dst, const void *src, uint n) {[m
+   return memmove(dst, src, n);[m
+ }[m
