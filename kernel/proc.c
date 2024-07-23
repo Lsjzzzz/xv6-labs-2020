@@ -95,7 +95,8 @@ allocproc(void)
   struct proc *p;
 
   for(p = proc; p < &proc[NPROC]; p++) {
-    acquire(&p->lock);
+    //获取当前进程结构体 p 的锁 (p->lock)。锁的目的是确保在修改进程结构体时不会被其他线程或中断打断，从而保证数据的一致性和完整性。
+    acquire(&p->lock); 
     if(p->state == UNUSED) {
       goto found;
     } else {
